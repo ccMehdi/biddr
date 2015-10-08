@@ -1,0 +1,64 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @item.title %>
+</p>
+
+<p>
+  <strong>Detail:</strong>
+  <%= @item.detail %>
+</p>
+
+<p>
+  <strong>End date:</strong>
+  <%= @item.end_date %>
+</p>
+
+<p>
+  <% if @item.reserved_price == 1.0 %>
+    <strong>Price:</strong>
+    <%= number_to_currency(@item.reserved_price) %>
+  <% else %>
+    <strong>Price:</strong>
+    Reserve Not Yet met!
+  <% end %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @item.user(@item.user_id).email_address %>
+</p>
+<% if current_user.id == @item.user_id %>
+  <%= link_to 'Edit', edit_item_path(@item) %> |
+  <% end %>
+<%= link_to 'Back', items_path %>
+
+<hr>
+
+<% if current_user.id != @item.user_id %>
+<h2>place a bid</h2>
+  <% if @bid.errors.any? %>
+    <ul>
+      <% @bid.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <%= form_for [@item, @bid] do |f| %>
+    <div class="form-group">
+      <%= f.label :bid_amount %>
+      <%= f.text_field :bid_amount, class: "form-control" %>
+    </div>
+    <%= f.submit "bid", class: "btn btn-primary" %>
+  <% end %>
+<% end %>
+<h2>Bids</h2>
+<% @item.bids.each do |bids| %>
+  <div class="well" id="<%= dom_id(bids) %>">
+    Bid: <%= number_to_currency(bids.bid_amount) %>&nbsp; &nbsp;
+    by: <%= bids.user(bids.user_id).email_address %><br><br>
+
+  </div>
+<% end %>
